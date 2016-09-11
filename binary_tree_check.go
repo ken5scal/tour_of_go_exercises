@@ -7,4 +7,4 @@ func main() {
 	fmt.Println("hoge")
 }
 
-func Walk() {}
+func Walk(tree *tree.Tree, c chan int) {}
