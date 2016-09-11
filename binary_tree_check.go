@@ -4,10 +4,10 @@ import "fmt"
 import "golang.org/x/tour/tree"
 
 func main() {
-	ch := make(chan int, 10)
-	go Walk(tree.New(1), ch)
+	c := make(chan int, 10)
+	go Walk(tree.New(1), c)
 
-	for i := range ch {
+	for i := range c {
 		fmt.Println(i)
 	}
 }
