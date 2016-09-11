@@ -18,3 +18,7 @@ func Walk(tree *tree.Tree, c chan int) {
 	}
 	close(c)
 }
+
+func Same(t1 *tree.Tree, t2 *tree.Tree) bool {
+	return true
+}
