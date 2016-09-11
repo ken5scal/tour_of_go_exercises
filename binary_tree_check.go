@@ -38,8 +38,6 @@ func Same(t1 *tree.Tree, t2 *tree.Tree) bool {
 
 	for i:= 0; i < cap(c1); i++ {
 		t1_v, t2_v := <-c1, <-c2
-		fmt.Printf("t1_v: %d\n", t1_v)
-		fmt.Printf("t2_v: %d\n", t2_v)
 		if t1_v != t2_v {
 			return false
 		}
