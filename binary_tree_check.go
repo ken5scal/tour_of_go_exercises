@@ -34,12 +34,6 @@ func Same(t1 *tree.Tree, t2 *tree.Tree) bool {
 	go Walk(t1, c1)
 	go Walk(t2, c2)
 
-	//for i:= 0; i < cap(c1); i++ {
-	//	t1_v, t2_v := <-c1, <-c2
-	//	if t1_v != t2_v {
-	//		return false
-	//	}
-	//}
 	for i:= range c1 {
 		if i != <-c2 {
 			return false
