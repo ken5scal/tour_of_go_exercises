@@ -7,9 +7,11 @@ func main() {
 	c := make(chan int, 10)
 	go Walk(tree.New(1), c)
 
-	for i := 0; i < cap(c); i++ {
-		fmt.Println(<-c)
-	}
+	//for i := 0; i < cap(c); i++ {
+	//	fmt.Println(<-c)
+	//}
+	result := Same(tree.New(1), tree.New(2))
+	fmt.Println(result)
 }
 
 func Walk(tree *tree.Tree, c chan int) {
