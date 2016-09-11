@@ -1,14 +1,8 @@
 package main
-import "fmt"
 
-func main() {
-	c := make(chan int, 10)
-	go fibonacci2(cap(c), c)
-	for i := range c {
-		fmt.Println(i)
-	}
-	close(c)
-}
+import (
+	"fmt"
+)
 
 func fibonacci2(n int, c chan int) {
 	x, y := 0, 1
@@ -16,5 +10,13 @@ func fibonacci2(n int, c chan int) {
 		c <- x
 		x, y = y, x + y
 	}
-	return c
+	close(c)
+}
+
+func main() {
+	c := make(chan int, 5)
+	go fibonacci2(cap(c), c)
+	for i := range c {
+		fmt.Println(i)
+	}
 }
