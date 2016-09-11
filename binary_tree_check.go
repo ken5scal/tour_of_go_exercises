@@ -1,12 +1,7 @@
 package main
 
 import "fmt"
-
-type Tree struct {
-	Left  *Tree
-	Value int
-	Right *Tree
-}
+import "golang.org/x/tour/tree"
 
 func main() {
 	fmt.Println("hoge")
