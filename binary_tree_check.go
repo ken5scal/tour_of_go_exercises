@@ -12,11 +12,16 @@ func main() {
 }
 
 func Walk(tree *tree.Tree, c chan int) {
+	_walk(tree, c)
+	close(c)
+}
+
+func _walk(tree *tree.Tree, c chan int) {
 	if (tree.Left != nil) {
-		Walk(tree.Left, c)
+		_walk(tree.Left, c)
 	}
 	if (tree.Right != nil) {
-		Walk(tree.Right, c)
+		_walk(tree.Right, c)
 	}
 
 	c <- tree.Value
