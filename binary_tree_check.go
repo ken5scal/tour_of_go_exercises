@@ -4,10 +4,6 @@ import "fmt"
 import "golang.org/x/tour/tree"
 
 func main() {
-
-	//for i := 0; i < cap(c); i++ {
-	//	fmt.Println(<-c)
-	//}
 	t1 := tree.New(1)
 	t2 := tree.New(2)
 
