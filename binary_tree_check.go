@@ -28,8 +28,8 @@ func _walk(tree *tree.Tree, c chan int) {
 }
 
 func Same(t1 *tree.Tree, t2 *tree.Tree) bool {
-	c1 := make(chan int, 10)
-	c2 := make(chan int, 10)
+	c1 := make(chan int)
+	c2 := make(chan int)
 
 	go Walk(t1, c1)
 	go Walk(t2, c2)
