@@ -30,13 +30,14 @@ func Walk(tree *tree.Tree, c chan int) {
 }
 
 func Same(t1 *tree.Tree, t2 *tree.Tree) bool {
-	c := make(chan int, 10)
+	c1 := make(chan int, 10)
+	c2 := make(chan int, 10)
 
-	go Walk(t1, c)
-	go Walk(t2, c)
+	go Walk(t1, c1)
+	go Walk(t2, c2)
 
-	for i:= 0; i < cap(c); i++ {
-		t1_v, t2_v := <-c, <-c
+	for i:= 0; i < cap(c1); i++ {
+		t1_v, t2_v := <-c1, <-c2
 		fmt.Printf("t1_v: %d\n", t1_v)
 		fmt.Printf("t2_v: %d\n", t2_v)
 		if t1_v != t2_v {
