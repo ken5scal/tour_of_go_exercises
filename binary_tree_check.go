@@ -3,7 +3,7 @@ package main
 import "fmt"
 
 type Tree struct {
-	Left *Tree
+	Left  *Tree
 	Value int
 	Right *Tree
 }
@@ -11,3 +11,5 @@ type Tree struct {
 func main() {
 	fmt.Println("hoge")
 }
+
+func Walk() {}
