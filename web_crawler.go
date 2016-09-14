@@ -33,3 +33,11 @@ func Crawl(url string, depth int, fetcher Fetcher) {
 func main() {
 	Crawl("http://golang.org/", 4, fetcher)
 }
+
+//fkeFetcher is Fetcher that returns canned results
+type fakeFetcher map[string]*fakeResult
+
+type fakeResult struct {
+	body string
+	urls []string
+}
