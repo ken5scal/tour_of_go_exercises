@@ -48,3 +48,5 @@ func (f fakeFetcher) Fetch(url string) (string, []string, error) {
 	}
 	return "", nil, fmt.Errorf("not found: %s",url)
 }
+
+var fetcher = fakeFetcher{}
