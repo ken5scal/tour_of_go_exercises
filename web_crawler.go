@@ -17,7 +17,7 @@ func Crawl(url string, depth int, fetcher Fetcher) {
 	if depth <= 0 {
 		return
 	}
-	body ,urls, err := fetcher.Fetch(url)
+	body, urls, err := fetcher.Fetch(url)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -25,7 +25,7 @@ func Crawl(url string, depth int, fetcher Fetcher) {
 
 	fmt.Printf("found: %s %q \n", url, body)
 	for _, u := range urls {
-		Crawl(u, depth-1, fetcher)
+		Crawl(u, depth - 1, fetcher)
 	}
 	return
 }
@@ -40,4 +40,11 @@ type fakeFetcher map[string]*fakeResult
 type fakeResult struct {
 	body string
 	urls []string
+}
+
+func (f fakeFetcher) Fetch(url string) (string, []string, error) {
+	if res, ok := f[url]; ok {
+		return res.body, res.urls, nil
+	}
+	return "", nil, fmt.Errorf("not found: %s",url)
 }
