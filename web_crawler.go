@@ -13,7 +13,7 @@ type Fetcher interface {
 
 type Fetched struct {
 	//url map[string] error
-	url map[string] bool
+	url map[string]bool
 	mux sync.Mutex
 }
 
@@ -32,6 +32,8 @@ func (f *Fetched) isAlreadyFetched(url string) bool {
 	return f.url[url]
 }
 
+var fetched = Fetched{url: make(map[string]bool)}
+
 func main() {
 	Crawl("http://golang.org/", 4, fetcher)
 }
@@ -40,8 +42,6 @@ func main() {
 // pages starting with url, to a max of depth
 func Crawl(url string, depth int, fetcher Fetcher) {
 	// TODO: Fetch URLs in parallel without fetching the same URL twice.
-	urls := make(chan []string)
-
 	if depth <= 0 {
 		return
 	}
