@@ -23,6 +23,15 @@ func (f *Fetched) updateValue(url string) {
 	f.url[url] = true
 }
 
+func (f *Fetched) isAlreadyFetched(url string) bool {
+	f.mux.Lock()
+	defer f.mux.Unlock()
+	if _, ok := f.url[url]; !ok {
+		return false
+	}
+	return f.url[url]
+}
+
 func main() {
 	Crawl("http://golang.org/", 4, fetcher)
 }
