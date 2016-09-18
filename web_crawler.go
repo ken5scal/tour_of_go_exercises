@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"sync"
+	"errors"
 )
 
 type Fetcher interface {
@@ -13,26 +14,30 @@ type Fetcher interface {
 
 type Fetched struct {
 	//url map[string] error
-	url map[string]bool
+	url map[string]error
 	mux sync.Mutex
 }
 
-func (f *Fetched) updateValue(url string) {
+func (f *Fetched) addValue(url string) {
 	f.mux.Lock()
 	defer f.mux.Unlock()
-	f.url[url] = true
+	f.url[url] = errors.New("url load in progress.")
+}
+
+func (f *Fetched) updateLoadingStatus(url string, e error) {
+	f.mux.Lock()
+	defer f.mux.Unlock()
+	f.url[url] = e
 }
 
 func (f *Fetched) isAlreadyFetched(url string) bool {
 	f.mux.Lock()
 	defer f.mux.Unlock()
-	if _, ok := f.url[url]; !ok {
-		return false
-	}
-	return f.url[url]
+	_, ok := f.url[url]
+	return ok
 }
 
-var fetched = Fetched{url: make(map[string]bool)}
+var fetched = Fetched{url: make(map[string]error)}
 
 func main() {
 	Crawl("http://golang.org/", 4, fetcher)
@@ -46,17 +51,36 @@ func Crawl(url string, depth int, fetcher Fetcher) {
 		return
 	}
 
-	body, urls, err := fetcher.Fetch(url)
+	if fetched.isAlreadyFetched(url) {
+		//fmt.Printf("%s already fetched\n", url)
+		return
+	}
+
+	fetched.addValue(url)
+
+	_, urls, err := fetcher.Fetch(url)
+
+	fetched.updateLoadingStatus(url, err)
+
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	fmt.Printf("found: %s %q \n", url, body)
-	for _, u := range urls {
-		Crawl(u, depth - 1, fetcher)
+	//fmt.Printf("found: %s %q \n", url, body)
+	done := make(chan bool)
+	for i, u := range urls {
+		fmt.Printf("-> Crawling child %v/%v of %v : %v.\n", i, len(urls), url, u)
+		go func(url string) {
+			Crawl(url, depth - 1, fetcher)
+			done <- true
+		}(u)
 	}
-	return
+	for i, u := range urls {
+		fmt.Printf("<- [%v] %v/%v Waiting for child %v.\n", url, i, len(urls), u)
+		<-done
+	}
+	fmt.Printf("<- Done with %v\n", url)
 }
 
 //fkeFetcher is Fetcher that returns canned results
@@ -84,27 +108,27 @@ var fetcher = fakeFetcher{
 			"http://golang.org/cmd/",
 		},
 	},
-	//"http://golang.org/pkg/": &fakeResult{
-	//	"Packages",
-	//	[]string{
-	//		"http://golang.org/",
-	//		"http://golang.org/cmd/",
-	//		"http://golang.org/pkg/fmt/",
-	//		"http://golang.org/pkg/os/",
-	//	},
-	//},
-	//"http://golang.org/pkg/fmt/": &fakeResult{
-	//	"Package fmt",
-	//	[]string{
-	//		"http://golang.org/",
-	//		"http://golang.org/pkg/",
-	//	},
-	//},
-	//"http://golang.org/pkg/os/": &fakeResult{
-	//	"Package os",
-	//	[]string{
-	//		"http://golang.org/",
-	//		"http://golang.org/pkg/",
-	//	},
-	//},
+	"http://golang.org/pkg/": &fakeResult{
+		"Packages",
+		[]string{
+			"http://golang.org/",
+			"http://golang.org/cmd/",
+			"http://golang.org/pkg/fmt/",
+			"http://golang.org/pkg/os/",
+		},
+	},
+	"http://golang.org/pkg/fmt/": &fakeResult{
+		"Package fmt",
+		[]string{
+			"http://golang.org/",
+			"http://golang.org/pkg/",
+		},
+	},
+	"http://golang.org/pkg/os/": &fakeResult{
+		"Package os",
+		[]string{
+			"http://golang.org/",
+			"http://golang.org/pkg/",
+		},
+	},
 }
