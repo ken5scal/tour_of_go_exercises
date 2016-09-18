@@ -11,15 +11,32 @@ type Fetcher interface {
 	Fetch(url string) (body string, urls[]string, err error)
 }
 
+type Fetched struct {
+	//url map[string] error
+	url map[string] bool
+	mux sync.Mutex
+}
+
+func (f *Fetched) updateValue(url string) {
+	f.mux.Lock()
+	defer f.mux.Unlock()
+	f.url[url] = true
+}
+
+func main() {
+	Crawl("http://golang.org/", 4, fetcher)
+}
+
 // Crawl uses fetcher to recursively crawl
 // pages starting with url, to a max of depth
 func Crawl(url string, depth int, fetcher Fetcher) {
-	// TODO: Fetch URLs in parallel/
-	// TODO: Don't fetch the same URL twice.
-	// This implementation doesn't do either"
+	// TODO: Fetch URLs in parallel without fetching the same URL twice.
+	urls := make(chan []string)
+
 	if depth <= 0 {
 		return
 	}
+
 	body, urls, err := fetcher.Fetch(url)
 	if err != nil {
 		fmt.Println(err)
